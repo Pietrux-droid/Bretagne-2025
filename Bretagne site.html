@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Répartition voitures</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .car {
+            background: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Répartition des voitures</h1>
+<p><strong>Voiture 1</strong> : Irene (conductrice) et Emma sont déjà assignées.<br>
+<strong>Voiture 2</strong> : Chloé (conductrice) + un 2ᵉ conducteur à désigner.<br>
+<strong>JB est déjà sur place.</strong></p>
+
+<button onclick="assignCars()">Répartir</button>
+
+<div id="results"></div>
+
+<script>
+    const fixedCar1 = ["Irene (conductrice)", "Emma"];
+    const fixedCar2 = ["Chloé (conductrice)"];
+    const people = ["Pietro", "Francois", "Alexis", "Adele", "Melanie", "Olivier", "Antoine"];
+    const drivers = ["Pietro", "Francois", "Adele", "Melanie", "Olivier", "Antoine"]; // Alexis ne peut pas conduire
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    function assignCars() {
+        let remainingPeople = [...people];
+        let car1 = [...fixedCar1];
+        let car2 = [...fixedCar2];
+
+        // Choisir un 2ᵉ conducteur pour la voiture 2
+        shuffle(drivers);
+        const secondDriver = drivers.find(d => remainingPeople.includes(d));
+        car2.push(secondDriver + " (conducteur)");
+        remainingPeople = remainingPeople.filter(p => p !== secondDriver);
+
+        // Mélanger les autres personnes
+        shuffle(remainingPeople);
+
+        // Remplir les places restantes
+        car1 = car1.concat(remainingPeople.splice(0, 3)); // 3 places restantes dans voiture 1
+        car2 = car2.concat(remainingPeople.splice(0, 3)); // 3 places restantes dans voiture 2
+
+        // Afficher les résultats
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = `
+            <div class="car">
+                <h3>🚗 Voiture 1 (samedi 23 août)</h3>
+                <ul>${car1.map(p => `<li>${p}</li>`).join("")}</ul>
+            </div>
+            <div class="car">
+                <h3>🚗 Voiture 2 (dimanche)</h3>
+                <ul>${car2.map(p => `<li>${p}</li>`).join("")}</ul>
+            </div>
+        `;
+    }
+</script>
+
+</body>
+</html>
